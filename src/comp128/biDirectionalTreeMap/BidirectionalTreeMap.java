@@ -152,5 +152,32 @@ public class BidirectionalTreeMap<K extends Comparable<K>, V extends Comparable<
         return null;
     }
 
-    
+
+
+    /**
+     * Checks if the key exists in the map
+     *
+     * @param key
+     * @return true if key was found
+     */
+    public boolean containsKey(K key) {
+        return getValue(key) != null;
+    }
+
+    /**
+     * Checks if the value exists in the map
+     *
+     * @param value
+     * @return true if found
+     */
+    public boolean containsValue(V value) {
+        return getKey(value) != null;
+    }
+
+    /**
+     * @return the number of key/value associations contained in the map
+     */
+    public int size() {
+        return size;
+    }
 }
