@@ -152,6 +152,125 @@ public class BidirectionalTreeMap<K extends Comparable<K>, V extends Comparable<
         return null;
     }
 
+        /**
+     * A recursive helper method to find a target Node in BST.
+     *
+     * @param localRoot The root of the tree/subtree being visited.
+     * @param item The node with the data to be found.
+     * @return The node to be found in the BST. Returns null if the target is not in the tree.
+     */
+    public Node find(Node<? extends Comparable, ?> localRoot, Node<? extends Comparable, ?> item) {
+        if (localRoot == null) {
+            return null;
+        }
+
+        int compareValue = item.data.compareTo(localRoot.data);
+
+        if (compareValue == 0) {
+            return localRoot;
+        } else if (compareValue > 0) {
+            return find(localRoot.right, item);
+        } else {
+            return find(localRoot.left, item);
+        }
+    }
+
+    /**
+     * Remove the key and corresponding value from the map (and both trees)
+     *
+     * @param key
+     * @return value that was removed that corresponds to key or null if the key does not exist in the map.
+     */
+    public V remove(K key) {
+        if (!containsKey(key)) {
+            return null;
+        }
+        Node<K,V> keyNode = new Node(key);
+        Node<K, V> delKeyReturn = new Node(null);
+        keyRoot = delete(keyRoot, keyNode, delKeyReturn);
+
+        Node<V, K> valueNode = delKeyReturn.link;
+        Node<V, K> delValueReturn = new Node(null);
+        valueRoot = delete(valueRoot, valueNode, delValueReturn);
+
+        size--;
+        return delValueReturn.data;
+    }
+
+    /**
+     * Recursive delete method.
+     *
+     * @param localRoot The root of the current subtree
+     * @param item      The item to be deleted
+     * @param deleteReturn A node representing the eventually deleted node.
+     * @return The modified local root that does not contain
+     * the item
+     * @post The item is not in the tree;
+     * deleteReturn is equal to the deleted item
+     * as it was stored in the tree or null
+     * if the item was not found.
+     */
+    public Node delete(Node<K, V> localRoot, Node<? extends Comparable, ?> item, Node deleteReturn) {
+        if (localRoot == null) {
+            // item is not in the tree.
+            return localRoot;
+        }
+
+        // Search for item to delete.
+        int compResult = item.data.compareTo(localRoot.data);
+        if (compResult < 0) {
+            // item is smaller than localRoot.data.
+            localRoot.left = delete(localRoot.left, item, deleteReturn);
+            if (localRoot.left != null) {
+                localRoot.left.parent = localRoot;
+            }
+            return localRoot;
+        } else if (compResult > 0) {
+            // item is larger than localRoot.data.
+            localRoot.right = delete(localRoot.right, item, deleteReturn);
+            if (localRoot.right != null) {
+                localRoot.right.parent = localRoot;
+            }
+            return localRoot;
+        } else {
+            // item is at local root.
+            deleteReturn.data = localRoot.data;
+            deleteReturn.link = localRoot.link;
+            System.out.println("data: " + deleteReturn.data);
+            System.out.println("link:" + deleteReturn.link);
+            if (!(localRoot.link == null)) {
+                localRoot.link.link = null;
+            }
+            if (localRoot.left == null) {
+                // If there is no left child, return right child
+                // which can also be null.
+                return localRoot.right;
+            } else if (localRoot.right == null) {
+                // If there is no right child, return left child.
+                return localRoot.left;
+            } else {
+                // Node being deleted has 2 children, replace the data
+                // with inorder predecessor.
+                if (localRoot.left.right == null) {
+                    // The left child has no right child.
+                    // Replace the data with the data in the
+                    // left child.
+                    localRoot.data = localRoot.left.data;
+                    // Replace the left child with its left child.
+                    localRoot.left = localRoot.left.left;
+                    if (localRoot.left != null) {
+                        localRoot.left.parent = localRoot;
+                    }
+                    return localRoot;
+                } else {
+                    // Search for the inorder predecessor (ip) and
+                    // replace deleted node's data with ip.
+                    localRoot.data = findLargestChild(localRoot.left);
+                    return localRoot;
+                }
+            }
+        }
+    }
 
 
     /**
