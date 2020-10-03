@@ -271,7 +271,79 @@ public class BidirectionalTreeMap<K extends Comparable<K>, V extends Comparable<
             }
         }
     }
+    
+    /**
+     * Find the node that is the
+     * inorder predecessor and replace it
+     * with its left child (if any).
+     *
+     * @param parent The parent of possible inorder
+     *               predecessor (ip)
+     * @return The data in the ip
+     * @post The inorder predecessor is removed from the tree.
+     */
+    private K findLargestChild(Node parent) {
+        // If the right child has no right child, it is
+        // the inorder predecessor.
+        if (parent.right.right == null) {
+            K returnValue = (K) parent.right.data;
+            parent.right = parent.right.left;
+            if (parent.right != null) {
+                parent.right.parent = parent;
+            }
+            return returnValue;
+        } else {
+            return findLargestChild(parent.right);
+        }
+    }
 
+    /**
+     * An inorder traversal of the map ordered by the keys
+     *
+     * @return a string representing the inorder traversal of the map ordered by keys in the form:
+     * "(apple, 3), (banana, 5), (carrot, 4), (date, 6), (eggplant, 1), (fig, 2)"
+     */
+    public String inOrderTraverseByKeys() {
+        Node root = keyRoot;
+        StringBuilder sb = new StringBuilder();
+        String str = inOrderTraverse(root, sb, true);
+        return str.substring(0, str.length() - 2);
+    }
+
+    /**
+     * An inorder traversal of the map ordered by values
+     *
+     * @return a string representing the inorder traversal of the map ordered by values in the form:
+     * "(eggplant, 1), (fig, 2), (apple, 3), (carrot, 4), (banana, 5), (date, 6)"
+     */
+    public String inOrderTraverseByValues() {
+        Node root = valueRoot;
+        StringBuilder sb = new StringBuilder();
+        String str = inOrderTraverse(root, sb, false);
+        return str.substring(0, str.length() - 2);
+    }
+
+    /**
+     * Recursive helper method for traversing binary search trees.
+     * @param node The currently visited node
+     * @param sb StringBuilder to help track the traversed nodes.
+     * @param isKeyRoot a boolean represents whether the BST is of key root
+     * @return
+     */
+    public String inOrderTraverse(Node<? extends Comparable, ?> node, StringBuilder sb, boolean isKeyRoot) {
+        if (node == null) {
+            return "";
+        } else {
+            inOrderTraverse(node.left, sb, isKeyRoot);
+            if (isKeyRoot) {
+                sb.append("(" + node.data + ", " + node.link.data + "), ");
+            } else {
+                sb.append("(" + node.link.data + ", " + node.data + "), ");
+            }
+            inOrderTraverse(node.right, sb, isKeyRoot);
+        }
+        return sb.toString();
+    }
 
     /**
      * Checks if the key exists in the map
