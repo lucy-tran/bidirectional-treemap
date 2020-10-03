@@ -110,4 +110,22 @@ public class BidirectionalMapTest {
         assertFalse(map.put("olive", 2)); // values also can't already exist
     }
 
+    @Test
+    public void testSize() {
+        assertEquals(6, map.size());
+    }
+
+    @Test
+    public void testRemove() {
+        assertEquals(4, (int) map.remove("carrot"));
+        assertEquals(5, map.size());
+        assertFalse(map.containsValue(4));
+        assertFalse(map.containsKey("carrot"));
+
+        assertEquals(6, (int) map.remove("date"));
+        assertEquals(4, map.size());
+
+        assertNull(map.remove("grape"));
+        assertEquals(4, map.size());
+    }
 }
