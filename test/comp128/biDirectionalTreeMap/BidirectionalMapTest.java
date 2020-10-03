@@ -66,4 +66,48 @@ public class BidirectionalMapTest {
         assertFalse(map.containsValue(10));
     }
 
+    @Test
+    public void testKeyOrdering() {
+        Comparator<AbstractMap.SimpleImmutableEntry<String, Integer>> byKey =
+                (AbstractMap.SimpleImmutableEntry<String, Integer> o1, AbstractMap.SimpleImmutableEntry<String, Integer> o2) -> o1.getKey().compareTo(o2.getKey());
+        Collections.sort(entries, byKey);
+
+        StringBuilder expectedOutput = new StringBuilder();
+        for (AbstractMap.SimpleImmutableEntry<String, Integer> entry : entries) {
+            expectedOutput.append("(");
+            expectedOutput.append(entry.getKey());
+            expectedOutput.append(", ");
+            expectedOutput.append(entry.getValue());
+            expectedOutput.append("), ");
+        }
+        expectedOutput.delete(expectedOutput.length() - 2, expectedOutput.length()); // trim last ", "
+
+        assertEquals(expectedOutput.toString(), map.inOrderTraverseByKeys());
+    }
+
+    @Test
+    public void testValueOrdering() {
+        Comparator<AbstractMap.SimpleImmutableEntry<String, Integer>> byValue = Comparator.comparing(AbstractMap.SimpleImmutableEntry::getValue);
+        Collections.sort(entries, byValue);
+
+        StringBuilder expectedOutput = new StringBuilder();
+        for (AbstractMap.SimpleImmutableEntry<String, Integer> entry : entries) {
+            expectedOutput.append("(");
+            expectedOutput.append(entry.getKey());
+            expectedOutput.append(", ");
+            expectedOutput.append(entry.getValue());
+            expectedOutput.append("), ");
+        }
+        expectedOutput.delete(expectedOutput.length() - 2, expectedOutput.length()); // trim last ", "
+
+        assertEquals(expectedOutput.toString(), map.inOrderTraverseByValues());
+    }
+
+    @Test
+    public void testReturnValueOfPut() {
+        assertTrue(map.put("orange", 7)); // can add an element where the key and value don't exist in the map already
+        assertFalse(map.put("carrot", 10)); //keys can't already exist
+        assertFalse(map.put("olive", 2)); // values also can't already exist
+    }
+
 }
